@@ -12,14 +12,15 @@ Coordinate independent coding-agent sessions as one team. The sessions may use d
 ## Workflow
 
 1. Inspect the project, Git state, available agent tools, current sessions, message bridge, and quota information before changing setup. Preserve user changes and chosen model or effort settings.
-2. Agree on roles and ownership. A coordinator plans and integrates; builders own bounded changes; testers verify acceptance criteria; reviewers inspect the integrated result. Adjust the number of roles to fit the task.
-3. Identify each participant using its native session ID when available, otherwise register an explicit stable alias with the bridge. Do not infer identity from a terminal number or pasted text.
-4. Prove a real message exchange through the configured bridge before delegating code changes. The recipient must retrieve the delivered message, acknowledge its ID, and send a reply the coordinator can read. Queue acceptance alone is not proof the receiving agent saw the message.
-5. If participants use different AI tools, connect each through a supported adapter: a shared MCP server, documented bridge CLI, or another explicit transport. Do not assume one provider's fork, API, or MCP integration works for another provider. If an agent cannot use any bridge interface, describe that limit and use a human-mediated handoff instead of pretending it is connected.
-6. Use separate Git worktrees for concurrent writers. Check `git status` first, agree on file ownership, and do not assume uncommitted work moves into a worktree.
-7. Set acceptance criteria and a runnable verifier before assigning work. Require evidence from the actual run. Diagnose failures before one bounded retry; do not loop on a failing check.
-8. Track each provider's official quota where available and honor the user's checkpoint threshold. If asked to reserve the final 10%, checkpoint at 90% used and stop new work at the agreed limit. Report unavailable quota as unknown; do not estimate savings.
-9. Integrate verified changes, request review of the integrated revision, and report what was checked, limitations, live session/worktree state, and resume steps.
+2. Decide whether more than one agent is worth the setup and review cost. Choose a single-agent, sequential, independent-parallel, or independent-review flow; read [references/orchestration-patterns.md](references/orchestration-patterns.md) when the task has multiple workstreams.
+3. Agree on roles and ownership. A coordinator plans and integrates; builders own bounded changes; testers verify acceptance criteria; reviewers inspect the integrated result. Adjust the number of roles to fit the task.
+4. Identify each participant using its native session ID when available, otherwise register an explicit stable alias with the bridge. Do not infer identity from a terminal number or pasted text.
+5. Prove a real message exchange through the configured bridge before delegating code changes. The recipient must retrieve the delivered message, acknowledge its ID, and send a reply the coordinator can read. Queue acceptance alone is not proof the receiving agent saw the message.
+6. If participants use different AI tools, connect each through a supported adapter: a shared MCP server, documented bridge CLI, or another explicit transport. Do not assume one provider's fork, API, or MCP integration works for another provider. If an agent cannot use any bridge interface, describe that limit and use a human-mediated handoff instead of pretending it is connected.
+7. Use separate Git worktrees for concurrent writers. Check `git status` first, agree on file ownership, and do not assume uncommitted work moves into a worktree.
+8. Set acceptance criteria and a runnable verifier before assigning work. Use [templates/task-brief.md](templates/task-brief.md) to prepare consistent assignments. Require evidence from the actual run. Diagnose failures before one bounded retry; do not loop on a failing check.
+9. Track each provider's official quota where available and honor the user's checkpoint threshold. If asked to reserve the final 10%, checkpoint at 90% used and stop new work at the agreed limit. Report unavailable quota as unknown; do not estimate savings.
+10. Integrate verified changes, request review of the integrated revision, and report what was checked, limitations, live session/worktree state, and resume steps.
 
 ## Security and unattended work
 

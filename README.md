@@ -52,9 +52,17 @@ Codex-specific permission examples and Windows UAC details are in [permissions a
 
 ## Install
 
-This repository contains a Codex skill package. To install it for Codex, clone the public repository and copy its contents into the Codex skills directory.
+The easiest option is the open `skills` CLI. It can install one skill into the supported agent products it detects; review its prompts and choose global or project scope:
 
-PowerShell:
+```sh
+npx skills add https://github.com/ASHRAF-2004/multi-agent-terminal-team --skill multi-agent-terminal-team
+```
+
+To install globally to all agent products supported by the CLI, use `--agent '*' --global`. This only installs the instructions. It does not connect the agents or install a message broker. Check the CLI's current supported-agent list and choose only the products you use.
+
+The CLI is optional. You can clone and copy the files yourself.
+
+Windows PowerShell:
 
 ```powershell
 git clone https://github.com/ASHRAF-2004/multi-agent-terminal-team.git "$env:TEMP\multi-agent-terminal-team"
@@ -73,15 +81,17 @@ mkdir -p "$skills_root/multi-agent-terminal-team"
 cp -R "${TMPDIR:-/tmp}/multi-agent-terminal-team/." "$skills_root/multi-agent-terminal-team/"
 ```
 
-Restart Codex after installation. For another agent product, include [TEAM-PROMPT.md](TEAM-PROMPT.md) in that product's project instructions or provide it to the session along with relevant files under `references/`. If the product supports reusable skills, follow its own installation format. `SKILL.md` is this repository's Codex skill entrypoint; `agents/openai.yaml` is Codex-specific metadata and is not required by other tools.
+Restart the agent after installation if it does not discover the new skill automatically. For a product not supported by the skills CLI, include [TEAM-PROMPT.md](TEAM-PROMPT.md) in that product's project instructions or provide it to the session along with relevant files under `references/`. `agents/openai.yaml` is optional Codex interface metadata and is not required by other tools.
 
 ## Repository contents
 
 - `SKILL.md` is the shared coordination workflow.
 - `TEAM-PROMPT.md` is a short provider-neutral prompt for other agent sessions.
+- `references/orchestration-patterns.md` helps choose a single-agent, sequential, parallel, or independent-review flow.
 - `references/platforms-and-agents.md` describes cross-platform setup and integration options.
 - `references/team-operations.md` defines reliable messaging, task ownership, Git worktrees, integration, and quota checkpoints.
 - `references/permissions-and-unattended.md` covers permissions and unattended runs, with Codex-specific details clearly marked.
+- `templates/task-brief.md` is a reusable assignment template with ownership, dependencies, acceptance checks, and a result format.
 - `scripts/team-doctor.mjs` performs a read-only, cross-platform project preflight.
 - `agents/openai.yaml` provides Codex interface metadata.
 
@@ -92,3 +102,10 @@ This repository provides instructions, not a preconfigured universal broker. Eac
 - [Codex CLI commands](https://learn.chatgpt.com/docs/developer-commands?surface=cli)
 - [Codex approvals and security](https://learn.chatgpt.com/docs/agent-approvals-security)
 - [Codex Windows sandbox](https://learn.chatgpt.com/docs/windows/windows-sandbox)
+
+## Skill installation reference
+
+- [Skills CLI documentation](https://www.skills.sh/docs/cli)
+- [Supported agents and installation options](https://github.com/vercel-labs/skills)
+- [Multi-agent orchestration example](https://www.skills.sh/qodex-ai/ai-agent-skills/multi-agent-orchestration)
+- [Parallel coding agents example](https://github.com/agenticluke/parallel-code-agents-plus)
