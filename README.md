@@ -45,7 +45,7 @@ Keep each terminal open while its session is working. A fork does not keep the s
 
 ## Choose Codex permissions
 
-Windows User Account Control (UAC) controls Windows administrator elevation. It does not control Codex approval prompts. Changing UAC settings is not needed to let Codex work without prompts. Keep UAC at its normal setting and do not run all terminals as Administrator.
+Windows User Account Control (UAC) and Codex approvals are separate. The Codex `--ask-for-approval never` option can stop Codex approval prompts, but it cannot answer a Windows UAC dialog. If a command asks Windows for administrator access, the Yes/No prompt can pause the run until someone responds. For unattended work, avoid tasks that require elevation. If a one-time Codex sandbox setup needs administrator approval, do that setup while you are present; do not disable UAC globally to hide the prompt.
 
 For project-scoped work, this command disables approval prompts while keeping Codex's sandbox limited to the current workspace:
 
@@ -53,7 +53,7 @@ For project-scoped work, this command disables approval prompts while keeping Co
 codex --sandbox workspace-write --ask-for-approval never
 ```
 
-Use this only when you are comfortable with Codex running workspace commands without asking first.
+This controls Codex approval prompts only. It does not suppress Windows UAC dialogs or other operating-system prompts. Use it only when you are comfortable with Codex running workspace commands without asking first.
 
 For an existing session, this command disables prompts and removes the normal workspace boundary:
 
@@ -67,7 +67,7 @@ For a new session, omit `resume <SESSION_ID>`:
 codex --sandbox danger-full-access --ask-for-approval never
 ```
 
-With `danger-full-access`, commands may affect files and network resources outside the project. No-prompt settings do not guarantee that a task will finish while you are away; quota limits, failed commands, network loss, or unclear requirements can stop it. For unattended work, set a bounded task, save checkpoints, and define a verifier. Use full access only in an environment where broad changes are acceptable.
+With `danger-full-access`, commands may affect files and network resources outside the project. `--ask-for-approval never` disables Codex's own approval prompts; it does not bypass Windows UAC, which can still pause an elevated command for a Yes/No response. No-prompt settings also do not guarantee that a task will finish while you are away; quota limits, failed commands, network loss, or unclear requirements can stop it. For unattended work, set a bounded task, save checkpoints, define a verifier, and avoid tasks that may request elevation. Use full access only in an environment where broad changes are acceptable.
 
 ## Install the skill
 
@@ -94,5 +94,6 @@ The skill contains instructions, not a universal broker program. Each project ne
 
 ## Codex documentation
 
+- [Codex approvals and security](https://learn.chatgpt.com/docs/agent-approvals-security) - sandbox and Codex approval settings.
+- [Windows User Account Control](https://support.microsoft.com/en-us/windows/security/user-account-control-settings) - Windows elevation prompts.
 - [CLI commands](https://learn.chatgpt.com/docs/developer-commands?surface=cli) - fork and resume sessions.
-- [Configuration basics](https://learn.chatgpt.com/docs/config-file/config-basic) - sandbox and approval settings.
