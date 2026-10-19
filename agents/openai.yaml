@@ -1,0 +1,4 @@
+interface:
+  display_name: "Codex Multi-Terminal Team"
+  short_description: "Coordinate four real Codex terminals safely"
+  default_prompt: "Use $codex-multi-terminal-team to set up or run a coordinated four-terminal Codex team."
