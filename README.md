@@ -1,99 +1,76 @@
-﻿# Codex multi-terminal team
+# Multi-agent terminal team
 
-Use this skill when you want four Codex CLI sessions to work on one project with clear roles and a way to exchange real messages.
+Coordinate separate coding-agent sessions on one project. Use one coordinator, give each writer a separate Git worktree, and connect the sessions through a message bridge that every participant can use.
 
-The four roles are:
+This workflow works across Windows, macOS, and Linux, and can include different AI providers. It does not assume their conversations are shared or that their command-line options match. Each agent needs access to the project and a supported bridge adapter such as MCP, a bridge CLI, or an HTTP client.
 
-1. **Coordinator** - plans work, assigns tasks, integrates changes, and reports progress.
-2. **Builder** - implements a clearly scoped change in its own Git worktree.
-3. **Tester** - checks the change against agreed acceptance criteria.
-4. **Reviewer** - reviews the integrated changes for problems and missed requirements.
+## Start the team
 
-A fork starts another session with the same conversation history. It does not connect the terminals. The sessions need a working message broker to exchange assignments and results. Use separate Git worktrees for parallel code changes.
+1. Open one terminal per agent session and change each terminal to the project repository root.
 
-## Start four Codex terminals on Windows
+   PowerShell:
 
-Open four PowerShell or Windows Terminal tabs. Use your normal Windows account; Administrator access is not needed for ordinary project work.
+   ```powershell
+   Set-Location 'C:\path\to\project'
+   ```
 
-In each tab, go to the project folder:
+   Bash, zsh, and other POSIX shells:
 
-```powershell
-Set-Location 'C:\path\to\your\project'
-```
+   ```sh
+   cd /path/to/project
+   ```
 
-In Terminal 1, start a session:
+2. Start each agent with its normal command or IDE. Forking or resuming can reuse that product's conversation history, but it is optional and does not connect sessions.
+3. Assign roles: coordinator, builder, tester, and reviewer. For smaller tasks, combine roles or use fewer sessions.
+4. Have the coordinator check Git status and identify a shared bridge or configure a project-scoped one. Confirm every agent has an adapter it can call.
+5. Before assigning implementation, prove a message round trip: one agent sends a message, another retrieves and acknowledges it, then replies. The coordinator must be able to retrieve that reply.
+6. Give each concurrent writer a separate worktree and a bounded task with acceptance criteria and a verifier.
 
-```powershell
-codex
-```
+Read [platform and agent setup](references/platforms-and-agents.md) for shell examples and adapter requirements. Read [team operations](references/team-operations.md) for the bridge contract, worktree ownership, integration, and quota handling.
 
-In Terminals 2, 3, and 4, run `codex fork` and select Terminal 1's session. You can also provide its session ID directly:
+## Permissions and unattended runs
 
-```powershell
-codex fork <SESSION_ID>
-```
+Approval flags and sandbox settings differ by agent. Operating-system elevation prompts are separate: a Windows UAC dialog, macOS authorization prompt, or Linux `sudo` request may wait for a person even when the agent is configured not to ask for approval. For unattended work, avoid elevation-dependent tasks, use a bounded objective, save checkpoints, and define a verifier.
 
-If you are starting new conversations, run `codex` in each terminal instead. To continue a session later, use:
+Codex-specific permission examples and Windows UAC details are in [permissions and unattended work](references/permissions-and-unattended.md). Do not apply Codex flags to other agents.
 
-```powershell
-codex resume <SESSION_ID>
-```
+## Install
 
-Assign the four roles listed above. Before delegating code changes, have the coordinator check that a broker is configured and demonstrate a message exchange with an acknowledgment from another session. If no broker exists, the terminals cannot message each other yet; ask Codex to set up and verify a project-scoped bridge first.
+This repository contains a Codex skill package. To install it for Codex, clone the public repository and copy its contents into the Codex skills directory.
 
-Keep each terminal open while its session is working. A fork does not keep the sessions synchronized. The broker carries messages; Git carries code changes.
-
-## Choose Codex permissions
-
-Windows User Account Control (UAC) and Codex approvals are separate. The Codex `--ask-for-approval never` option can stop Codex approval prompts, but it cannot answer a Windows UAC dialog. If a command asks Windows for administrator access, the Yes/No prompt can pause the run until someone responds. For unattended work, avoid tasks that require elevation. If a one-time Codex sandbox setup needs administrator approval, do that setup while you are present; do not disable UAC globally to hide the prompt.
-
-For project-scoped work, this command disables approval prompts while keeping Codex's sandbox limited to the current workspace:
+PowerShell:
 
 ```powershell
-codex --sandbox workspace-write --ask-for-approval never
-```
-
-This controls Codex approval prompts only. It does not suppress Windows UAC dialogs or other operating-system prompts. Use it only when you are comfortable with Codex running workspace commands without asking first.
-
-For an existing session, this command disables prompts and removes the normal workspace boundary:
-
-```powershell
-codex resume <SESSION_ID> --sandbox danger-full-access --ask-for-approval never
-```
-
-For a new session, omit `resume <SESSION_ID>`:
-
-```powershell
-codex --sandbox danger-full-access --ask-for-approval never
-```
-
-With `danger-full-access`, commands may affect files and network resources outside the project. `--ask-for-approval never` disables Codex's own approval prompts; it does not bypass Windows UAC, which can still pause an elevated command for a Yes/No response. No-prompt settings also do not guarantee that a task will finish while you are away; quota limits, failed commands, network loss, or unclear requirements can stop it. For unattended work, set a bounded task, save checkpoints, define a verifier, and avoid tasks that may request elevation. Use full access only in an environment where broad changes are acceptable.
-
-## Install the skill
-
-This repository is public. Clone it, then copy its contents into your Codex skills folder:
-
-```powershell
-git clone https://github.com/ASHRAF-2004/codex-multi-terminal-team.git "$env:TEMP\codex-multi-terminal-team"
+git clone https://github.com/ASHRAF-2004/multi-agent-terminal-team.git "$env:TEMP\multi-agent-terminal-team"
 $skillsRoot = if ($env:CODEX_HOME) { Join-Path $env:CODEX_HOME 'skills' } else { Join-Path $env:USERPROFILE '.codex\skills' }
-$skillPath = Join-Path $skillsRoot 'codex-multi-terminal-team'
+$skillPath = Join-Path $skillsRoot 'multi-agent-terminal-team'
 New-Item -ItemType Directory -Force $skillPath | Out-Null
-Copy-Item "$env:TEMP\codex-multi-terminal-team\*" $skillPath -Recurse -Force
+Copy-Item "$env:TEMP\multi-agent-terminal-team\*" $skillPath -Recurse -Force
 ```
 
-Restart Codex terminals so they can discover the skill. To update it, pull the latest repository changes and copy the updated files into the skill folder.
+macOS or Linux:
 
-## Files
+```sh
+git clone https://github.com/ASHRAF-2004/multi-agent-terminal-team.git "${TMPDIR:-/tmp}/multi-agent-terminal-team"
+skills_root="${CODEX_HOME:-$HOME/.codex}/skills"
+mkdir -p "$skills_root/multi-agent-terminal-team"
+cp -R "${TMPDIR:-/tmp}/multi-agent-terminal-team/." "$skills_root/multi-agent-terminal-team/"
+```
 
-- `SKILL.md` contains the workflow Codex follows when coordinating the team.
-- `references/team-operations.md` explains task assignment, broker messages, worktrees, integration, and quota-aware pauses.
-- `references/permissions-and-unattended.md` describes sandbox and approval settings, UAC, and unattended work.
-- `agents/openai.yaml` provides the skill's Codex display information.
+Restart Codex after installation. Other agent products may support their own skills or project-instruction formats; install or reference `SKILL.md` and the relevant files under `references/` according to that product's documentation. `agents/openai.yaml` is Codex-specific metadata and is not required by other tools.
 
-The skill contains instructions, not a universal broker program. Each project needs its own configured and verified messaging bridge.
+## Repository contents
 
-## Codex documentation
+- `SKILL.md` is the shared coordination workflow.
+- `references/platforms-and-agents.md` describes cross-platform setup and integration options.
+- `references/team-operations.md` defines reliable messaging, task ownership, Git worktrees, integration, and quota checkpoints.
+- `references/permissions-and-unattended.md` covers permissions and unattended runs, with Codex-specific details clearly marked.
+- `agents/openai.yaml` provides Codex interface metadata.
 
-- [Codex approvals and security](https://learn.chatgpt.com/docs/agent-approvals-security) - sandbox and Codex approval settings.
-- [Windows User Account Control](https://support.microsoft.com/en-us/windows/security/user-account-control-settings) - Windows elevation prompts.
-- [CLI commands](https://learn.chatgpt.com/docs/developer-commands?surface=cli) - fork and resume sessions.
+This repository provides instructions, not a preconfigured universal broker. Each project must connect its agents through a bridge they can all use.
+
+## Official Codex references
+
+- [Codex CLI commands](https://learn.chatgpt.com/docs/developer-commands?surface=cli)
+- [Codex approvals and security](https://learn.chatgpt.com/docs/agent-approvals-security)
+- [Codex Windows sandbox](https://learn.chatgpt.com/docs/windows/windows-sandbox)

@@ -1,51 +1,44 @@
 # Permissions and unattended work
 
-Codex sandboxing and approval policy answer different questions:
+Agent approval settings and operating-system permissions are separate controls. A no-approval option only affects the prompts owned by that agent product; it does not automatically answer OS authorization dialogs or consent prompts from other tools.
 
-- The **sandbox** limits what a generated command can access or change.
-- The **approval policy** controls when Codex pauses to ask before executing commands.
-- Windows **UAC** controls whether a Windows process receives elevated operating-system privileges.
+Examples of operating-system elevation include Windows User Account Control (UAC), macOS authorization dialogs, and Linux commands that invoke `sudo`. If a task may trigger one, an unattended session can pause until a person responds. Avoid elevation-dependent work in unattended assignments. Complete any necessary machine setup while present, and do not weaken system-wide protections just to hide a prompt.
 
-Changing UAC does not configure Codex's approval policy, but a UAC elevation dialog can still interrupt unattended work. If a process requests administrator privileges, Windows can show a Yes/No prompt that waits for a person. Codex's `--ask-for-approval never` setting cannot answer that operating-system dialog. Running all four terminals as Administrator is unnecessary for ordinary project work and expands the consequences of a mistake. Keep UAC at its normal setting and run Codex as the ordinary user; avoid elevation-dependent work in unattended tasks. If initial sandbox setup requires administrator approval, complete that setup while present.
+## General unattended checklist
 
-## Sensible defaults
+- Name the exact project and writable worktree.
+- Define a bounded task with acceptance criteria and a verifier that does not need subjective judgment.
+- Use the agent's least-permissive mode that still supports the task; inspect its effective settings rather than assuming a launch flag took effect.
+- Save checkpoints and logs in ignored project-local storage.
+- Set a quota checkpoint and stop threshold for each provider; unknown usage is not zero.
+- Do not leave destructive, account-level, deployment, publishing, purchase, or credential-handling actions unattended without explicit authorization and an appropriate recovery plan.
+- Expect network loss, terminal closure, operating-system updates, failed checks, expired quotas, and unclear requirements to interrupt the work.
 
-Use project-scoped `workspace-write` for ordinary coding. Pair it with `on-request` when the user wants to approve actions that cross the sandbox boundary. If the user explicitly wants no approval pauses, `never` can be paired with `workspace-write` to keep the filesystem boundary; Codex reports execution failures directly instead of prompting. Review the actual configured mode instead of assuming a command-line flag is the only policy source.
+Promise recoverable progress and a verifiable report, not guaranteed completion by a deadline.
 
-Example:
+## Codex CLI example
 
-```powershell
+Codex separates its sandbox from its approval policy. In supported CLI versions, this command disables Codex approval prompts while retaining the workspace-write boundary:
+
+```sh
 codex --sandbox workspace-write --ask-for-approval never
 ```
 
-The command is noninteractive for Codex approval prompts but still sandboxed to the workspace. It cannot suppress Windows UAC dialogs or other operating-system prompts. It is not equivalent to full machine access.
+Codex's `danger-full-access` removes its normal workspace boundary. Combining it with `--ask-for-approval never` allows broad command execution without Codex approval prompts; it still cannot answer Windows UAC, macOS authorization, or other OS prompts.
 
-## Full access, if explicitly requested
-
-`danger-full-access` removes the normal workspace boundary. Combining it with `--ask-for-approval never` means Codex can run commands without asking first. This mode should only be used in an environment the user is prepared to let commands modify broadly, preferably a disposable VM or a separate low-privilege account with only task-specific files.
-
-```powershell
+```sh
 codex --sandbox danger-full-access --ask-for-approval never
 codex resume <SESSION_ID> --sandbox danger-full-access --ask-for-approval never
 ```
 
-These options do not make the model more reliable, prevent data loss, bypass managed organization policy, suppress Windows UAC dialogs, or guarantee that a task completes while unattended. Do not launch them in an Administrator terminal as a blanket fix. Do not change UAC, Windows Defender, firewall, or global Codex configuration to suppress one project prompt. If a specific operation needs elevated access, isolate that operation and explain its scope instead.
+Use full access only when the environment is prepared for broad changes, preferably a disposable VM or a low-privilege account scoped to task files. These options do not guarantee success or bypass managed organization policy. Check the current Codex documentation and CLI version before relying on specific flags.
 
-## Unattended checklist
+## Windows UAC
 
-Before leaving a run unattended, make the work easy to recover and verify:
+UAC can show a Yes/No consent prompt when an action needs administrator privileges. That prompt is not a Codex approval prompt. Do not disable UAC or launch all terminals as Administrator just to make an unattended workflow appear noninteractive. Avoid commands that request elevation or complete a specific, reviewed setup step while a person is present.
 
-- Specify the exact project and writable worktree.
-- Define a bounded task and a verifier that can run without judgment calls.
-- Use durable progress/checkpoint notes and preserve logs.
-- Set explicit quota stop/checkpoint thresholds; unknown usage is not zero.
-- Avoid destructive, account-level, deployment, publishing, purchase, or credential-handling actions without a human at the keyboard.
-- Expect interruptions: quota reset, network loss, terminal closure, OS update, failing verification, or ambiguous requirements.
+## References
 
-Promise a checkpoint and verifiable report, never “it will definitely be done by morning.”
-
-## Official references
-
-- [Codex CLI commands](https://learn.chatgpt.com/docs/developer-commands?surface=cli)
-- [Codex configuration basics](https://learn.chatgpt.com/docs/config-file/config-basic)
+- [Codex approvals and security](https://learn.chatgpt.com/docs/agent-approvals-security)
+- [Codex Windows sandbox](https://learn.chatgpt.com/docs/windows/windows-sandbox)
 - [Windows User Account Control](https://support.microsoft.com/en-us/windows/security/user-account-control-settings)

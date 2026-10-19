@@ -1,32 +1,32 @@
 ---
-name: codex-multi-terminal-team
-description: Set up or coordinate four independent Codex CLI terminals for one software project, with real brokered messages, isolated Git worktrees, verification, and quota-aware pauses. Use when the user asks for multi-terminal Codex teamwork; not for ordinary single-terminal work.
+name: multi-agent-terminal-team
+description: Coordinate coding agents running in separate terminals across AI providers and operating systems, using a verified message bridge, isolated Git worktrees, clear task ownership, and evidence-based completion. Use when setting up or running a multi-agent coding team.
 metadata:
-  short-description: Coordinate four real Codex terminals
+  short-description: Coordinate independent coding agents
 ---
 
-# Codex Multi-Terminal Team
+# Multi-Agent Terminal Team
 
-Help the user run four independently visible Codex CLI threads as one accountable team. Terminals do not communicate merely because they share a conversation, model, folder, or machine. A fork shares starting context; a real broker is needed to carry messages.
+Coordinate independent coding-agent sessions as one team. The sessions may use different AI providers, models, shells, or operating systems. They do not communicate just because they share a repository, conversation history, or machine.
 
-## Operating workflow
+## Workflow
 
-1. Inspect the project, existing Codex threads, model/effort choices, Git state, quota limits, and any existing broker before changing setup. Reuse working pieces. Never assume a terminal is connected because it appears in a list.
-2. Assign one coordinator and clear roles for builder, tester, and reviewer. Keep roles and model choices configurable; do not silently change a user's selected model or global Codex settings.
-3. Prove a real message round trip between two existing native threads, with sender/recipient thread IDs and an explicit acknowledgment, before assigning implementation work. If there is no broker, explain the gap and propose a small project-scoped bridge based on the supported local Codex App Server/CLI interface. Do not fake dialogue or equate an MCP tool listing or queue acceptance with a model acknowledgment.
-4. Give each writer its own Git worktree. Check uncommitted files before making worktrees because Git worktrees do not copy uncommitted changes. Keep one active writer by default; let the coordinator integrate, then request independent review and verification.
-5. Define acceptance checks before dispatch. Require actual evidence and a runnable verifier for each task. On failure, preserve the failure, diagnose it, and use one bounded retry/escalation rather than looping.
-6. Track the official account quota when available. Honor user thresholds and pause budgets; if asked to reserve the last 10%, checkpoint at 90% used and hard-pause at the agreed limit. Unknown quota is unknown, never zero. Never claim token savings without measured before/after usage and comparable successful tasks.
-7. On completion, report the live thread/worktree status, what was verified, what remains, and exact resume commands. Keep checkpoints concise enough to leave the requested quota for a clean handoff.
+1. Inspect the project, Git state, available agent tools, current sessions, message bridge, and quota information before changing setup. Preserve user changes and chosen model or effort settings.
+2. Agree on roles and ownership. A coordinator plans and integrates; builders own bounded changes; testers verify acceptance criteria; reviewers inspect the integrated result. Adjust the number of roles to fit the task.
+3. Identify each participant using its native session ID when available, otherwise register an explicit stable alias with the bridge. Do not infer identity from a terminal number or pasted text.
+4. Prove a real message exchange through the configured bridge before delegating code changes. The recipient must retrieve the delivered message, acknowledge its ID, and send a reply the coordinator can read. Queue acceptance alone is not proof the receiving agent saw the message.
+5. If participants use different AI tools, connect each through a supported adapter: a shared MCP server, documented bridge CLI, or another explicit transport. Do not assume one provider's fork, API, or MCP integration works for another provider. If an agent cannot use any bridge interface, describe that limit and use a human-mediated handoff instead of pretending it is connected.
+6. Use separate Git worktrees for concurrent writers. Check `git status` first, agree on file ownership, and do not assume uncommitted work moves into a worktree.
+7. Set acceptance criteria and a runnable verifier before assigning work. Require evidence from the actual run. Diagnose failures before one bounded retry; do not loop on a failing check.
+8. Track each provider's official quota where available and honor the user's checkpoint threshold. If asked to reserve the final 10%, checkpoint at 90% used and stop new work at the agreed limit. Report unavailable quota as unknown; do not estimate savings.
+9. Integrate verified changes, request review of the integrated revision, and report what was checked, limitations, live session/worktree state, and resume steps.
 
-## Windows and permissions
+## Security and unattended work
 
-For the Windows four-terminal quick start and private-repo installation steps, read [README.md](README.md). Read [references/permissions-and-unattended.md](references/permissions-and-unattended.md) before recommending unattended or no-prompt execution. Administrator elevation and UAC changes are not a substitute for Codex sandbox or approval settings; never lower UAC as a convenience step.
+Treat agent approval settings, filesystem/network sandboxes, and operating-system elevation prompts as separate controls. A provider's no-approval option cannot answer a Windows UAC, macOS authorization, Linux `sudo`, or other operating-system prompt. Before unattended runs, use a bounded task, isolated worktree, checkpoints, a noninteractive verifier, and a permission mode appropriate for the environment. Never promise completion while the user is away.
 
-Prefer project-scoped `workspace-write` with the user's chosen approval policy. Full disk/network access with no approval prompts is a separate, high-impact choice. Only provide or apply that mode when the user explicitly requests it, explain its scope, and recommend a disposable or otherwise isolated environment. Do not promise that an unattended run will finish while the user is away.
+For platform setup and the bridge contract, read [references/platforms-and-agents.md](references/platforms-and-agents.md). For task ownership, message delivery, worktrees, integration, and quota handling, read [references/team-operations.md](references/team-operations.md). For permission details, read [references/permissions-and-unattended.md](references/permissions-and-unattended.md).
 
-## References
+## Portability boundary
 
-- Windows setup, fork/resume, roles, and install instructions: [README.md](README.md)
-- Bridge invariants, messages, worktrees, and restart/rollback: [references/team-operations.md](references/team-operations.md)
-- Sandbox, approval, UAC, and unattended-run boundaries: [references/permissions-and-unattended.md](references/permissions-and-unattended.md)
+This skill defines a coordination process; it does not install a universal broker or make every AI product compatible. Confirm each participant can access the project and its bridge adapter. Keep credentials, session IDs, logs, and queue state out of version control and in ignored project-local storage. Check the installed agent version and its official documentation before writing a provider-specific adapter.
