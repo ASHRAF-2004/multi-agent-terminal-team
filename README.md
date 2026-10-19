@@ -26,6 +26,22 @@ This workflow works across Windows, macOS, and Linux, and can include different 
 5. Before assigning implementation, prove a message round trip: one agent sends a message, another retrieves and acknowledges it, then replies. The coordinator must be able to retrieve that reply.
 6. Give each concurrent writer a separate worktree and a bounded task with acceptance criteria and a verifier.
 
+Before setup, run the read-only preflight from the skill directory (requires Node.js and Git), passing your project path:
+
+PowerShell:
+
+```powershell
+node .\scripts\team-doctor.mjs 'C:\path\to\project'
+```
+
+macOS or Linux:
+
+```sh
+node ./scripts/team-doctor.mjs /path/to/project
+```
+
+It reports the project path, Git status, registered worktrees, common agent CLIs on `PATH`, and whether `.multi-agent-team/` is ignored. It always marks the bridge **not verified** because only an actual message round trip can prove communication. Set `TEAM_AGENT_COMMANDS` to a comma-separated list of CLI names to check instead of the defaults.
+
 Read [platform and agent setup](references/platforms-and-agents.md) for shell examples and adapter requirements. Read [team operations](references/team-operations.md) for the bridge contract, worktree ownership, integration, and quota handling.
 
 ## Permissions and unattended runs
@@ -65,6 +81,7 @@ Restart Codex after installation. Other agent products may support their own ski
 - `references/platforms-and-agents.md` describes cross-platform setup and integration options.
 - `references/team-operations.md` defines reliable messaging, task ownership, Git worktrees, integration, and quota checkpoints.
 - `references/permissions-and-unattended.md` covers permissions and unattended runs, with Codex-specific details clearly marked.
+- `scripts/team-doctor.mjs` performs a read-only, cross-platform project preflight.
 - `agents/openai.yaml` provides Codex interface metadata.
 
 This repository provides instructions, not a preconfigured universal broker. Each project must connect its agents through a bridge they can all use.
