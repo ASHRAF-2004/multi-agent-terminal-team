@@ -73,11 +73,12 @@ mkdir -p "$skills_root/multi-agent-terminal-team"
 cp -R "${TMPDIR:-/tmp}/multi-agent-terminal-team/." "$skills_root/multi-agent-terminal-team/"
 ```
 
-Restart Codex after installation. Other agent products may support their own skills or project-instruction formats; install or reference `SKILL.md` and the relevant files under `references/` according to that product's documentation. `agents/openai.yaml` is Codex-specific metadata and is not required by other tools.
+Restart Codex after installation. For another agent product, include [TEAM-PROMPT.md](TEAM-PROMPT.md) in that product's project instructions or provide it to the session along with relevant files under `references/`. If the product supports reusable skills, follow its own installation format. `SKILL.md` is this repository's Codex skill entrypoint; `agents/openai.yaml` is Codex-specific metadata and is not required by other tools.
 
 ## Repository contents
 
 - `SKILL.md` is the shared coordination workflow.
+- `TEAM-PROMPT.md` is a short provider-neutral prompt for other agent sessions.
 - `references/platforms-and-agents.md` describes cross-platform setup and integration options.
 - `references/team-operations.md` defines reliable messaging, task ownership, Git worktrees, integration, and quota checkpoints.
 - `references/permissions-and-unattended.md` covers permissions and unattended runs, with Codex-specific details clearly marked.
