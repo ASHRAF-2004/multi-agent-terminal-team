@@ -58,7 +58,15 @@ The easiest option is the open `skills` CLI. It can install one skill into the s
 npx skills add https://github.com/ASHRAF-2004/multi-agent-terminal-team --skill multi-agent-terminal-team
 ```
 
-To install globally to all agent products supported by the CLI, use `--agent '*' --global`. This only installs the instructions. It does not connect the agents or install a message broker. Check the CLI's current supported-agent list and choose only the products you use.
+For a global copy in every integration target supported by that CLI:
+
+```sh
+npx skills add https://github.com/ASHRAF-2004/multi-agent-terminal-team --skill multi-agent-terminal-team --agent '*' --global
+```
+
+That may create skill folders for agent products you do not have installed, so use the interactive command above if you want to select only the tools you use. Installation only provides instructions; it does not connect agents or install a message broker. To refresh skills installed through the CLI, run `npx skills update`.
+
+The skills CLI reports anonymous skill-install events to its leaderboard by default. Set `DISABLE_TELEMETRY=1` for that command if you want to opt out; see the [CLI documentation](https://www.skills.sh/docs/cli).
 
 The CLI is optional. You can clone and copy the files yourself.
 
@@ -82,6 +90,8 @@ cp -R "${TMPDIR:-/tmp}/multi-agent-terminal-team/." "$skills_root/multi-agent-te
 ```
 
 Restart the agent after installation if it does not discover the new skill automatically. For a product not supported by the skills CLI, include [TEAM-PROMPT.md](TEAM-PROMPT.md) in that product's project instructions or provide it to the session along with relevant files under `references/`. `agents/openai.yaml` is optional Codex interface metadata and is not required by other tools.
+
+Invoke it using the agent's own skill syntax. For example, Codex accepts `$multi-agent-terminal-team`; Claude Code exposes installed skills as slash commands such as `/multi-agent-terminal-team`. Other agents use their own entry point or can be given `TEAM-PROMPT.md` directly.
 
 ## Repository contents
 
