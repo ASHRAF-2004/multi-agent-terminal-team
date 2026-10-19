@@ -1,67 +1,77 @@
-# Four terminals, one team, no telepathy
+﻿# Codex multi-terminal team
 
-This skill helps Codex coordinate four real terminal sessions without pretending they share a brain just because they share a folder.
+Use this skill when you want four Codex CLI sessions to work on one project with clear roles and a way to exchange real messages.
 
-The short version: one terminal steers, one builds, one tests, one reviews. A fork can give the other three the same opening context. A small message broker gives the independent sessions an actual way to talk. Git worktrees keep their edits from landing on each other's toes.
+The four roles are:
 
-## Windows quick start
+1. **Coordinator** - plans work, assigns tasks, integrates changes, and reports progress.
+2. **Builder** - implements a clearly scoped change in its own Git worktree.
+3. **Tester** - checks the change against agreed acceptance criteria.
+4. **Reviewer** - reviews the integrated changes for problems and missed requirements.
 
-1. Open four normal PowerShell or Windows Terminal tabs. **Do not run them as Administrator by default.** Admin rights increase the damage a bad command can do and do not turn Codex approval prompts off.
-2. In every tab, change to the same project checkout:
+A fork starts another session with the same conversation history. It does not connect the terminals. The sessions need a working message broker to exchange assignments and results. Use separate Git worktrees for parallel code changes.
 
-   ```powershell
-   Set-Location 'C:\path\to\your\project'
-   ```
+## Start four Codex terminals on Windows
 
-3. In Terminal 1, start the coordinator's conversation:
+Open four PowerShell or Windows Terminal tabs. Use your normal Windows account; Administrator access is not needed for ordinary project work.
 
-   ```powershell
-   codex
-   ```
+In each tab, go to the project folder:
 
-4. In Terminals 2, 3, and 4, run `codex fork` and choose that conversation in the session picker. Or pass its session ID with `codex fork <SESSION_ID>`. This makes separate chats with the same starting history. **Forking is useful, not mandatory, and it does not create terminal-to-terminal messaging.** If you are starting fresh, just run `codex` in each tab. To continue an existing session, use `codex resume` or `codex resume <SESSION_ID>`.
-5. Give the terminals distinct jobs: **1 coordinator, 2 builder, 3 tester, 4 reviewer**. Before parallel edits, have the coordinator assign separate Git worktrees and prove one real message/acknowledgment round trip through the project's broker. If there is no broker, the sessions are still separate; ask Codex to set up and verify a project-scoped bridge first.
-6. Keep each terminal open while its session is working. Forks are independent sessions, not clones that automatically stay in sync. The broker carries instructions and results; Git carries code changes.
+```powershell
+Set-Location 'C:\path\to\your\project'
+```
 
-### Resume without the picker
+In Terminal 1, start a session:
+
+```powershell
+codex
+```
+
+In Terminals 2, 3, and 4, run `codex fork` and select Terminal 1's session. You can also provide its session ID directly:
+
+```powershell
+codex fork <SESSION_ID>
+```
+
+If you are starting new conversations, run `codex` in each terminal instead. To continue a session later, use:
 
 ```powershell
 codex resume <SESSION_ID>
 ```
 
-For a new conversation, the resume step is unnecessary: run `codex`. For shared starting context, use `codex fork`; for continuing the same conversation, use `codex resume`.
+Assign the four roles listed above. Before delegating code changes, have the coordinator check that a broker is configured and demonstrate a message exchange with an acknowledgment from another session. If no broker exists, the terminals cannot message each other yet; ask Codex to set up and verify a project-scoped bridge first.
 
-## The no-prompt question (and the UAC myth)
+Keep each terminal open while its session is working. A fork does not keep the sessions synchronized. The broker carries messages; Git carries code changes.
 
-Windows UAC controls Windows elevation. Codex's approval policy and sandbox are separate settings. Changing UAC does not grant Codex automatic approval. You usually should not elevate these terminals.
+## Choose Codex permissions
 
-The everyday no-surprise setup is to keep Codex inside the project with `workspace-write`; choose approvals in `/permissions` or through your trusted project config. The command below disables prompts **but keeps the sandbox limited to the workspace**:
+Windows User Account Control (UAC) controls Windows administrator elevation. It does not control Codex approval prompts. Changing UAC settings is not needed to let Codex work without prompts. Keep UAC at its normal setting and do not run all terminals as Administrator.
+
+For project-scoped work, this command disables approval prompts while keeping Codex's sandbox limited to the current workspace:
 
 ```powershell
 codex --sandbox workspace-write --ask-for-approval never
 ```
 
-This asks for no approvals, so Codex will not stop for confirmation when a command fails; the sandbox still limits where commands can write. Use it only when that tradeoff fits the task.
+Use this only when you are comfortable with Codex running workspace commands without asking first.
 
-The command you mentioned is valid in the current CLI, but it combines two separate high-impact choices: `danger-full-access` removes the workspace boundary, and `never` disables approval prompts:
+For an existing session, this command disables prompts and removes the normal workspace boundary:
 
 ```powershell
 codex resume <SESSION_ID> --sandbox danger-full-access --ask-for-approval never
 ```
 
-Starting a new session instead:
+For a new session, omit `resume <SESSION_ID>`:
 
 ```powershell
 codex --sandbox danger-full-access --ask-for-approval never
 ```
 
-That can let commands affect files and network resources beyond the project without asking first. It is **not** a “go to sleep, wake up to guaranteed finished work” switch. Quota limits, failing builds, ambiguous requirements, or a system restart can still stop a run. Never combine it with Administrator elevation as a blanket setup. If you deliberately need that mode, use a disposable VM or a separate low-privilege account, give a bounded task and verifier, and keep a recovery checkpoint.
+With `danger-full-access`, commands may affect files and network resources outside the project. No-prompt settings do not guarantee that a task will finish while you are away; quota limits, failed commands, network loss, or unclear requirements can stop it. For unattended work, set a bounded task, save checkpoints, and define a verifier. Use full access only in an environment where broad changes are acceptable.
 
-## Install this skill
+## Install the skill
 
-This repository is private. The owner must grant each user access before they can clone or install it. After access is granted, clone the repo and copy `codex-multi-terminal-team` into the user's Codex skills folder:
-
-After the owner grants you access, clone the private repository and copy its contents into your skills folder:
+This repository is public. Clone it, then copy its contents into your Codex skills folder:
 
 ```powershell
 git clone https://github.com/ASHRAF-2004/codex-multi-terminal-team.git "$env:TEMP\codex-multi-terminal-team"
@@ -71,18 +81,18 @@ New-Item -ItemType Directory -Force $skillPath | Out-Null
 Copy-Item "$env:TEMP\codex-multi-terminal-team\*" $skillPath -Recurse -Force
 ```
 
-Restart Codex terminals after installing so they discover the skill. To update, pull in the cloned repo and copy the reviewed changes into the skill folder. Treat skill instructions as executable guidance: review updates before trusting them.
+Restart Codex terminals so they can discover the skill. To update it, pull the latest repository changes and copy the updated files into the skill folder.
 
-## What's in the box
+## Files
 
-- `SKILL.md`: when and how Codex should coordinate the team.
-- `references/team-operations.md`: broker, worktree, delivery, and verification invariants.
-- `references/permissions-and-unattended.md`: plain-language permission modes and unattended-run limits.
-- `agents/openai.yaml`: Codex skill-card metadata.
+- `SKILL.md` contains the workflow Codex follows when coordinating the team.
+- `references/team-operations.md` explains task assignment, broker messages, worktrees, integration, and quota-aware pauses.
+- `references/permissions-and-unattended.md` describes sandbox and approval settings, UAC, and unattended work.
+- `agents/openai.yaml` provides the skill's Codex display information.
 
-This repository packages the reusable instructions. A broker, role threads, and worktrees belong to each project and must be configured and verified there; the skill will not invent them or silently rewrite global Codex settings.
+The skill contains instructions, not a universal broker program. Each project needs its own configured and verified messaging bridge.
 
-## Official Codex references
+## Codex documentation
 
-- [Codex CLI commands](https://learn.chatgpt.com/docs/developer-commands?surface=cli) — fork and resume behavior.
-- [Codex configuration basics](https://learn.chatgpt.com/docs/config-file/config-basic) — project config, sandbox, and approval policy.
+- [CLI commands](https://learn.chatgpt.com/docs/developer-commands?surface=cli) - fork and resume sessions.
+- [Configuration basics](https://learn.chatgpt.com/docs/config-file/config-basic) - sandbox and approval settings.
